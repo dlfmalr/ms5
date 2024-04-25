@@ -18,10 +18,24 @@ public class NotebookController {
     @PostMapping("/books/write")
     public String write() {
         Notebook notebook = new Notebook();
-        notebook.setName("새노트북");
+        notebook.setName("새노트");
 
         notebookRepository.save(notebook);
         noteService.saveDefault(notebook);
+
+        return "redirect:/";
+    }
+
+    @PostMapping("/groups/{notebookId}/books/write")
+    public String groupWrite(@PathVariable("notebookId") Long notebookId) {
+        Notebook parent = notebookRepository.findById(notebookId).orElseThrow();
+
+        Notebook child = new Notebook();
+        child.setName("새노트북");
+        notebookRepository.save(child);
+
+        parent.addChildren(child);
+        notebookRepository.save(parent);
 
         return "redirect:/";
     }

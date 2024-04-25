@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css"/>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
@@ -12,17 +13,37 @@
     </div>
     <div class="bg-red-600 flex">
         <div class="bg-blue-200 w-[20%]">
-            <ul class="h-[100%] overflow-scroll">
-                <li th:each="notebook : ${notebookList}" th:class="${notebook.id == targetNotebook.id} ? bg-blue-300 : ''">
-                    <a th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}"></a>
+            <ul class="menu h-[100%] overflow-scroll">
+                <li th:each="notebook : ${notebookList}">
+                    <th:block th:if="${!#lists.isEmpty(notebook.children)}">
+                        <details open>
+                            <summary class="flex p-0"><a class="w-[100%] p-[10px]"
+                                                         th:classsappend="${notebook.id == targetNotebook.id} ? 'bg-blue-300' : ''"
+                                                         th:href="@{|/books/${notebook.id}|}"
+                                                         th:text="${notebook.name}"></a></summary>
+                            <ul>
+                                <li th:each="child : ${notebook.children}">
+                                    <a th:class="${child.id == targetNotebook.id} ? 'w-[100%] p-[10px] bg-blue-300' : ''"
+                                       th:href="@{|/books/${child.id}|}" th:text="${child.name}"></a>
+                                </li>
+                            </ul>
+                        </details>
+                    </th:block>
+                    <th:block th:if="${#lists.isEmpty(notebook.children) and notebook.parent == null}">
+                        <a th:class="${notebook.id == targetNotebook.id} ? 'w-[100%] p-[10px] bg-blue-300' : ''"
+                           th:href="@{|/books/${notebook.id}|}" th:text="${notebook.name}"></a>
+                    </th:block>
                 </li>
             </ul>
 
             <form th:action="@{|/books/write|}" method="post">
                 <input type="submit" value="추가">
             </form>
+            <form th:action="@{|/groups/${targetNotebook.id}/books/write|}" method="post">
+                <input type="submit" value="하위 노트북 추가">
+            </form>
         </div>
-        <div class="bg-red-300 w-[20%] h-[800px] text-center ">
+        <div class="bg-sky-100 w-[20%] h-[800px] text-center ">
             <ul class="h-[100%] overflow-scroll">
                 <li th:each="note : ${noteList}" th:class="${note.id == targetNote.id} ? bg-sky-300 : ''">
                     <a th:href="@{|/books/${targetNotebook.id}/notes/${note.id}|}" th:text="${note.title}"></a>
@@ -34,7 +55,7 @@
             </form>
         </div>
 
-        <div class="bg-green-300 w-[60%]">
+        <div class="bg-sky-100 w-[60%]">
             <form th:action="@{|/books/${targetNotebook.id}/notes/${targetNote.id}/update|}" method="post" id="updateForm">
                 <div>
                     <input type="hidden" name="id" th:value="${targetNote.id}">

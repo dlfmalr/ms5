@@ -17,6 +17,17 @@ public class Notebook {
     private Long id;
     private String name;
 
+    @ManyToOne
+    private Notebook parent;
+
     @OneToMany(mappedBy = "notebook")
     List<Note> noteList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "parent")
+    List<Notebook> children = new ArrayList<>();
+
+    public void addChildren(Notebook child) {
+        child.setParent(this);
+        children.add(child);
+    }
 }
