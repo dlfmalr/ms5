@@ -32,6 +32,9 @@ public class NotebookController {
 
         Notebook child = new Notebook();
         child.setName("새노트북");
+
+        Note note = noteService.saveDefault(parent);
+        child.addNote(note);
         notebookRepository.save(child);
 
         parent.addChildren(child);
