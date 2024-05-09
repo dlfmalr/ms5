@@ -1,5 +1,7 @@
 package com.example.ms5.note.note;
 
+import com.example.ms5.note.MainDataDto;
+import com.example.ms5.note.MainService;
 import com.example.ms5.note.notebook.Notebook;
 import com.example.ms5.note.notebook.NotebookRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,26 +22,20 @@ public class NoteController {
 
 
     private final NoteService noteService;
+    private final MainService mainService;
 
     @PostMapping("/write")
     public String write(@PathVariable("notebookId") Long notebookId) {
-        Notebook notebook = noteService.getNotebook(notebookId);
+        Notebook notebook = mainService.getNotebook(notebookId);
         noteService.saveDefault(notebook);
 
-        return "redirect:/";
+        return "redirect:/books/%d/notes/%d".formatted(notebookId, 1);
     }
 
     @GetMapping("/{id}")
     public String detail(Model model, @PathVariable("id") Long id, @PathVariable("notebookId") Long notebookId) {
-        Note note = noteService.getNote(id);
-        Notebook targetNotebook = noteService.getNotebook(notebookId);
-        List<Note> noteList = noteService.getNoteListByNotebook(targetNotebook);
-        List<Notebook> notebookList = noteService.getNotebookList();
-
-        model.addAttribute("targetNote", note);
-        model.addAttribute("noteList", noteList);
-        model.addAttribute("targetNotebook", targetNotebook);
-        model.addAttribute("notebookList", notebookList);
+        MainDataDto mainDataDto = mainService.getMainData(notebookId, id);
+        model.addAttribute("mainDataDto", mainDataDto);
 
         return "main";
     }

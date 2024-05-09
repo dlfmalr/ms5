@@ -1,5 +1,6 @@
 package com.example.ms5.note.notebook;
 
+import com.example.ms5.note.note.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,5 +17,9 @@ public class NotebookService {
 
     public List<Notebook> getNotebookList() {
         return notebookRepository.findAll();
+    }
+
+    public Notebook save(Notebook notebook) {
+        return notebookRepository.save(notebook);
     }
 }
